@@ -398,9 +398,11 @@
 				TargetAttributes = {
 					8BFD96AF1CF0709B008E8C9E = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 					};
 					8BFD96B91CF0709C008E8C9E = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 					};
 					8BFD97B51CF0E79E008E8C9E = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -691,6 +693,7 @@
 				PRODUCT_NAME = AERecord;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -709,6 +712,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.tadija.AERecord;
 				PRODUCT_NAME = AERecord;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -719,6 +723,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.tadija.AERecord-iOS-Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -729,6 +734,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.tadija.AERecord-iOS-Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -941,6 +947,7 @@
 				8BFD97BD1CF0E79E008E8C9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8BFD97CA1CF0E883008E8C9E /* Build configuration list for PBXNativeTarget "AERecord OSX" */ = {
 			isa = XCConfigurationList;
@@ -949,6 +956,7 @@
 				8BFD97CC1CF0E883008E8C9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8BFD97D91CF0E8C2008E8C9E /* Build configuration list for PBXNativeTarget "AERecord watchOS" */ = {
 			isa = XCConfigurationList;
@@ -957,6 +965,7 @@
 				8BFD97DB1CF0E8C2008E8C9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8BFD97EA1CF0E976008E8C9E /* Build configuration list for PBXNativeTarget "AERecord tvOS Tests" */ = {
 			isa = XCConfigurationList;
@@ -965,6 +974,7 @@
 				8BFD97EC1CF0E976008E8C9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8BFD97FE1CF0EA36008E8C9E /* Build configuration list for PBXNativeTarget "AERecord OSX Tests" */ = {
 			isa = XCConfigurationList;
@@ -973,6 +983,7 @@
 				8BFD98001CF0EA36008E8C9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

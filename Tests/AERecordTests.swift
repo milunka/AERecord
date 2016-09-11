@@ -76,27 +76,27 @@ class AERecordTests: XCTestCase {
     // MARK: - AERecord
     
     func testDefaultContext() {
-        let qualityOfServiceClass = QOS_CLASS_BACKGROUND
-        let backgroundQueue = dispatch_get_global_queue(qualityOfServiceClass, 0)
-        dispatch_async(backgroundQueue, {
+        let qualityOfServiceClass = DispatchQoS.QoSClass.background
+        let backgroundQueue = DispatchQueue.global(qos: qualityOfServiceClass)
+        backgroundQueue.async(execute: {
             let context = AERecord.defaultContext
-            XCTAssertEqual(context.concurrencyType, NSManagedObjectContextConcurrencyType.PrivateQueueConcurrencyType, "Should be able to return background context as default context when called from the background queue.")
+            XCTAssertEqual(context.concurrencyType, NSManagedObjectContextConcurrencyType.privateQueueConcurrencyType, "Should be able to return background context as default context when called from the background queue.")
             
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            DispatchQueue.main.async(execute: { () -> Void in
                 let context = AERecord.defaultContext
-                XCTAssertEqual(context.concurrencyType, NSManagedObjectContextConcurrencyType.MainQueueConcurrencyType, "Should be able to return main context as default context when called from the main queue.")
+                XCTAssertEqual(context.concurrencyType, NSManagedObjectContextConcurrencyType.mainQueueConcurrencyType, "Should be able to return main context as default context when called from the main queue.")
             })
         })
     }
     
     func testMainContext() {
         let context = AERecord.mainContext
-        XCTAssertEqual(context.concurrencyType, NSManagedObjectContextConcurrencyType.MainQueueConcurrencyType, "Should be able to create main context with .MainQueueConcurrencyType")
+        XCTAssertEqual(context.concurrencyType, NSManagedObjectContextConcurrencyType.mainQueueConcurrencyType, "Should be able to create main context with .MainQueueConcurrencyType")
     }
     
     func testBackgroundContext() {
         let context = AERecord.backgroundContext
-        XCTAssertEqual(context.concurrencyType, NSManagedObjectContextConcurrencyType.PrivateQueueConcurrencyType, "Should be able to create background context with .PrivateQueueConcurrencyType")
+        XCTAssertEqual(context.concurrencyType, NSManagedObjectContextConcurrencyType.privateQueueConcurrencyType, "Should be able to create background context with .PrivateQueueConcurrencyType")
     }
     
     func testPersistentStoreCoordinator() {
@@ -106,22 +106,22 @@ class AERecordTests: XCTestCase {
     
     func testStoreURLForName() {
         let storeURL = AERecord.storeURLForName("test")
-        let directoryURL = NSFileManager.defaultManager().URLsForDirectory(defaultSearchPath, inDomains: .UserDomainMask).last!
-        let expectedStoreURL = directoryURL.URLByAppendingPathComponent("test.sqlite")
+        let directoryURL = FileManager.default.urls(for: defaultSearchPath, in: .userDomainMask).last!
+        let expectedStoreURL = directoryURL.appendingPathComponent("test.sqlite")
         XCTAssertEqual(storeURL, expectedStoreURL, "")
     }
     
-    var defaultSearchPath: NSSearchPathDirectory {
+    var defaultSearchPath: FileManager.SearchPathDirectory {
         #if os(tvOS)
             return .CachesDirectory
         #else
-            return .DocumentDirectory
+            return .documentDirectory
         #endif
     }
     
     func testModelFromBundle() {
         let model = AERecord.modelFromBundle(forClass: AERecordTests.self)
-        let entityNames = Array(model.entitiesByName.keys).sort()
+        let entityNames = Array(model.entitiesByName.keys).sorted()
         let expectedEntityNames = ["Animal", "Breed", "Species"]
         XCTAssertEqual(entityNames, expectedEntityNames, "Should be able to load merged model from bundle for given class.")
     }
@@ -156,13 +156,13 @@ class AERecordTests: XCTestCase {
         let hasChangesAfterSaving = AERecord.defaultContext.hasChanges
         XCTAssertEqual(hasChangesAfterSaving, true, "Should still have changes after saving context without waiting.")
         
-        let expectation = expectationWithDescription("Context Saving")
-        let dispatchTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, Int64(1.0 * Double(NSEC_PER_SEC)))
-        dispatch_after(dispatchTime, dispatch_get_main_queue(), {
+        let expectation = self.expectation(description: "Context Saving")
+        let dispatchTime: DispatchTime = DispatchTime.now() + Double(Int64(1.0 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+        DispatchQueue.main.asyncAfter(deadline: dispatchTime, execute: {
             expectation.fulfill()
         })
         
-        self.waitForExpectationsWithTimeout(1.0, handler: { (error) -> Void in
+        self.waitForExpectations(timeout: 1.0, handler: { (error) -> Void in
             let hasChangesAfterWaiting = AERecord.defaultContext.hasChanges
             XCTAssertEqual(hasChangesAfterWaiting, false, "Should not have changes after waiting a bit, because context is now saved.")
         })
@@ -195,8 +195,8 @@ class AERecordTests: XCTestCase {
     }
     
     func testEntity() {
-        let animalAttributesCount = Animal.entity?.attributesByName.count
-        XCTAssertEqual(animalAttributesCount!, 3, "Should be able to get NSEntityDescription of the entity.")
+        let animalAttributesCount = Animal.entity().attributesByName.count
+        XCTAssertEqual(animalAttributesCount, 3, "Should be able to get NSEntityDescription of the entity.")
     }
     
     func testCreateFetchRequest() {
@@ -207,9 +207,9 @@ class AERecordTests: XCTestCase {
     func testCreatePredicateForAttributes() {
         let attributes = ["name" : "Tinna", "color" : "lightgray"]
         let predicate = Animal.createPredicateForAttributes(attributes)
-        XCTAssertTrue(predicate.predicateFormat.containsString("name == \"Tinna\""), "Created predicate should contain condition for 'name'.")
-        XCTAssertTrue(predicate.predicateFormat.containsString(" AND "), "Created predicate should contain AND.")
-        XCTAssertTrue(predicate.predicateFormat.containsString("color == \"lightgray\""), "Created predicate should contain condition for 'color'.")
+        XCTAssertTrue(predicate.predicateFormat.contains("name == \"Tinna\""), "Created predicate should contain condition for 'name'.")
+        XCTAssertTrue(predicate.predicateFormat.contains(" AND "), "Created predicate should contain AND.")
+        XCTAssertTrue(predicate.predicateFormat.contains("color == \"lightgray\""), "Created predicate should contain condition for 'color'.")
     }
     
     // MARK: Create
@@ -362,7 +362,7 @@ class AERecordTests: XCTestCase {
         XCTAssertEqual(villy.count, 1, "Should be able to return all records for given attributes.")
         XCTAssertEqual(villy.first!.name, "Villy", "Should be able to return all records for given attributes.")
         
-        let whiteAnimals = Animal.allWithAttributes(whiteAttributes, predicateType: .OrPredicateType)
+        let whiteAnimals = Animal.allWithAttributes(whiteAttributes, predicateType: .or)
         XCTAssertEqual(whiteAnimals!.count, 2, "Should be able to return all records for given attributes and OR predicate type.")
     }
     
@@ -373,7 +373,7 @@ class AERecordTests: XCTestCase {
         XCTAssertEqual(villy.count, 1, "Should be able to return all records for given attributes.")
         XCTAssertEqual(villy.first!.name, "Villy", "Should be able to return all records for given attributes.")
         
-        let whiteAnimals: [Animal] = Animal.allWithAttributes(whiteAttributes, predicateType: .OrPredicateType)!
+        let whiteAnimals: [Animal] = Animal.allWithAttributes(whiteAttributes, predicateType: .or)!
         XCTAssertEqual(whiteAnimals.count, 2, "Should be able to return all records for given attributes and OR predicate type.")
     }
     
@@ -418,7 +418,7 @@ class AERecordTests: XCTestCase {
     
     func testDeleteAllWithAttributes() {
         let attributes = ["color" : "white", "name" : "Caesar"]
-        Animal.deleteAllWithAttributes(attributes, predicateType: .OrPredicateType)
+        Animal.deleteAllWithAttributes(attributes, predicateType: .or)
         
         let animals = Animal.all()
         XCTAssertEqual(animals!.count, 4, "Should be able to delete all records for given attributes.")
