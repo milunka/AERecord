@@ -117,7 +117,7 @@ open class AERecord {
         :param: request Fetch request to execute.
         :param: context If not specified, `defaultContext` will be used.
     */
-    open class func executeFetchRequest(_ request: NSFetchRequest<AnyObject>, context: NSManagedObjectContext? = nil) -> [NSManagedObject] {
+    open class func executeFetchRequest(_ request: NSFetchRequest<NSFetchRequestResult>, context: NSManagedObjectContext? = nil) -> [NSManagedObject] {
         return AEStack.sharedInstance.executeFetchRequest(request, context: context)
     }
     
@@ -291,7 +291,7 @@ private class AEStack {
     
     // MARK: Context Operations
     
-    func executeFetchRequest(_ request: NSFetchRequest<AnyObject>, context: NSManagedObjectContext? = nil) -> [NSManagedObject] {
+    func executeFetchRequest(_ request: NSFetchRequest<NSFetchRequestResult>, context: NSManagedObjectContext? = nil) -> [NSManagedObject] {
         var fetchedObjects = [NSManagedObject]()
         let moc = context ?? defaultContext
         moc.performAndWait { () -> Void in
@@ -448,8 +448,8 @@ public extension NSManagedObject {
     
         :returns: The created fetch request.
     */
-    class func createFetchRequest(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]? = nil) -> NSFetchRequest<AnyObject> {
-        let request = NSFetchRequest(entityName: entityName)
+    class func createFetchRequest(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]? = nil) -> NSFetchRequest<NSFetchRequestResult> {
+        let request: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: entityName)
         request.predicate = predicate
         request.sortDescriptors = sortDescriptors
         return request
@@ -881,14 +881,13 @@ public extension NSManagedObject {
         let request = createFetchRequest(predicate: predicate)
         request.includesSubentities = false
         
-        var error: NSError?
-        let count = context.count(for: request, error: &error)
-        
-        if let err = error {
+        do {
+            let count = try context.count(for: request)
+            return count
+        } catch let err as NSError {
             print(err)
         }
-        
-        return count
+        return 0
     }
     
     /**
