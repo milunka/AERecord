@@ -436,7 +436,7 @@ public extension NSManagedObject {
     }
     
     /// An `NSEntityDescription` object describes an entity in Core Data.
-    class var entity: NSEntityDescription? {
+    class var aeEntity: NSEntityDescription? {
         return NSEntityDescription.entity(forEntityName: entityName, in: AERecord.defaultContext)
     }
     
@@ -485,7 +485,7 @@ public extension NSManagedObject {
     */
     class func create(context: NSManagedObjectContext = AERecord.defaultContext) -> Self {
         let entityDescription = NSEntityDescription.entity(forEntityName: entityName, in: context)
-        let object = self.`init`(entity:insertInto:)(entity: entityDescription!, insertInto: context)
+        let object = self.`init`(entity: entityDescription!, insertInto: context)
         return object
     }
     
